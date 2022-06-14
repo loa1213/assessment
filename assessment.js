@@ -13,27 +13,47 @@ assessmentButton.onclick = () => {
 
     // 診断結果表示エリアの作成
     resultDivided.innerText = '';
-    const header = document.createElement('h3');
-    header.innerText = '診断結果';
-    resultDivided.appendChild(header);
 
+    // headerDivided の作成
+    const headerDivided = document.createElement('div');
+    headerDivided.setAttribute('class', 'card-header');
+    headerDivided.innerText = '診断結果';
+
+    // bodyDivided の作成
+    const bodyDivided = document.createElement('div');
+    bodyDivided.setAttribute('class', 'card-body');
+    
     const paragraph = document.createElement('p');
+    paragraph.setAttribute('class', 'card-text');
     const result = assessment(userName);
     paragraph.innerText = result;
-    resultDivided.appendChild(paragraph);
+    bodyDivided.appendChild(paragraph);
+
+    // resultDivided にBootstrap のスタイルを適用する
+    resultDivided.setAttribute('class', 'card');
+    resultDivided.setAttribute('style', 'max-width: 700px;')
+
+    // headerDivided と bodyDivided を resultDivided に差し込む
+    resultDivided.appendChild(headerDivided);
+    resultDivided.appendChild(bodyDivided);
 
     // TODO ツイートエリアの作成
     tweetDivided.innerText = '';
     const anchor = document.createElement('a');
     const hrefValue =
-    'https://twitter.com/intent/tweet?button_hashtag=あなたのいいところ&ref_src=twsrc%5Etfw';
-
+    'https://twitter.com/intent/tweet?button_hashtag=' +
+    encodeURIComponent('あなたのいいところ') +
+    '&ref_src=twsrc%5Etfw';
     anchor.setAttribute('href, hrefValue');
     anchor.setAttribute('class', 'twitter-hashtag-button');
-    anchor.setAttribute('data-text', '診断結果の文章');
+    anchor.setAttribute('data-text', 'result');
     anchor.innerText = 'Tweet #あなたのいいところ';
-
     tweetDivided.appendChild(anchor);
+
+    // widgets.js の設定
+    const script = document.createElement('script');
+    script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+    tweetDivided.appendChild(script);
 };
 
 const answers = [
@@ -60,7 +80,7 @@ const answers = [
  * @param {string} userName ユーザーの名前
  * @return {string} 診断結果
  */
-function assessment(userName) {
+ function assessment(userName) {
     // 全文字のコード番号を取得してそれを足し合わせる
     let sumOfCharCode = 0;
     for (let i = 0; i < userName.length; i++) {
@@ -74,14 +94,3 @@ function assessment(userName) {
 result = result.replaceAll('{userName}', userName);
 return result;
 }
-
-//　テストコード
-console.assert(
-    assessment('太郎') ===
-    '太郎のいいところは決断力です。太郎がする決断にいつも助けられてる人がいます。',
-    '診断結果の文言の特定の部分を名前に置き換える処理が正しくありません。'
-);
-console.assert(
-    assessment('太郎') === assessment('太郎'),
-    '入力が同じ名前なら同じ診断結果を出力する処理が正しくありません。'
-);
